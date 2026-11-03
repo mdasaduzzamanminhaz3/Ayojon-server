@@ -25,6 +25,34 @@ app.get('/', (req, res) => {
     res.send('Hello World!');
 });
 
+app.post('/event', async (req,res)=> {
+    const data = req.body;
+    const result = await eventsCollection.insertOne(data);
+    console.log(result);
+    res.send(result);
+})
+app.get('/events', async (req,res)=> {
+    const result = await eventsCollection.find({}).toArray();
+    res.send(result);
+})
+app.get('/event/:id', async (req,res)=> {
+    const {id} = req.params;
+    const result = await eventsCollection.findOne({ _id: new ObjectId(id) });
+    res.send(result);
+})
+
+app.delete('/event/:id', async (req,res)=> {
+    const {id} = req.params;
+    const result = await eventsCollection.deleteOne({ _id: new ObjectId(id) });
+    res.send(result);
+});
+
+app.patch('/event/:id', async (req,res)=> {
+    const {id} = req.params;
+    const data = req.body;
+    const result = await eventsCollection.updateOne({ _id: new ObjectId(id) }, { $set: data });
+    res.send(result);
+});
 
 
 app.listen(port, () => {
