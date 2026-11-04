@@ -30,20 +30,67 @@ app.get('/', (req, res) => {
     res.send('Hello World!');
 });
 
-app.post('/event', async (req,res)=> {
+app.post('/event', async (req, res) => {
+  try {
     const data = req.body;
+
+    if (!data.organizerEmail) {
+      return res.status(400).send({
+        message: "Organizer email is required",
+      });
+    }
+
     const result = await eventsCollection.insertOne(data);
-    console.log(result);
+
+    res.status(201).send({
+      success: true,
+      message: "Event created successfully",
+      insertedId: result.insertedId,
+    });
+
+  } catch (error) {
+    console.error("Create event error:", error);
+
+    res.status(500).send({
+      message: "Failed to create event",
+    });
+  }
+});
+
+app.get("/my-events/:email", async (req, res) => {
+    const { email } = req.params;
+
+    const result = await eventsCollection
+      .find({ organizerEmail: email })
+      .toArray();
     res.send(result);
-})
+});
+
+
 app.get('/events/upcoming', async (req,res)=> {
     const result = await eventsCollection.find({}).toArray();
+    res.send(result);
+})
+app.get('/events/past', async (req,res)=> {
+        const today = new Intl.DateTimeFormat("en-CA", {
+      timeZone: "Asia/Dhaka",
+    }).format(new Date());
+
+    const result = await eventsCollection
+      .find({
+        date: { $lt: today },
+      })
+      .sort({ date: -1 })
+      .toArray();
+      
     res.send(result);
 })
 app.get('/event/:id', async (req,res)=> {
     const {id} = req.params;
     const result = await eventsCollection.findOne({ _id: new ObjectId(id) });
+
     res.send(result);
+
 })
 
 app.delete('/event/:id', async (req,res)=> {
