@@ -22,6 +22,10 @@ const mongoClient = await connectToMongoDB();
 const db = mongoClient.db('ayojon');
 const eventsCollection = db.collection('events');
 const eventsCategoryCollection = db.collection('events-category');
+const joinedCollection = db.collection('joined-events');
+
+
+
 app.get('/', (req, res) => {
     res.send('Hello World!');
 });
@@ -87,6 +91,24 @@ app.patch('/category/:id', async (req,res)=> {
     res.send(result);
 });
 
+//joined api
+app.post('/join-event', async (req,res)=> {
+    const data = req.body;
+    const result = await joinedCollection.insertOne(data);
+    res.send(result);
+});
+
+app.get('/joined-events/:email',async(req,res)=> {
+    const {email} = req.params;
+    const result = await joinedCollection.find({email:email}).toArray()
+    res.send(result)
+})
+
+app.delete('/joined-events/:id',async(req,res)=> {
+    const {id} = req.params
+    const result = await joinedCollection.deleteOne({_id: new ObjectId(id)})
+    res.send(result)
+})
 
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`);
