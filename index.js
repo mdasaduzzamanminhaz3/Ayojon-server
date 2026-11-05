@@ -163,19 +163,19 @@ app.patch('/category/:id', verifyToken,async (req,res)=> {
 });
 
 //joined api
-app.post('/join-event', async (req,res)=> {
+app.post('/join-event',verifyToken ,async (req,res)=> {
     const data = req.body;
     const result = await joinedCollection.insertOne(data);
     res.send(result);
 });
 
-app.get('/joined-events/:email',async(req,res)=> {
+app.get('/joined-events/:email',verifyToken,async(req,res)=> {
     const {email} = req.params;
     const result = await joinedCollection.find({email:email}).toArray()
     res.send(result)
 })
 
-app.delete('/joined-events/:id',async(req,res)=> {
+app.delete('/joined-events/:id',verifyToken,async(req,res)=> {
     const {id} = req.params
     const result = await joinedCollection.deleteOne({_id: new ObjectId(id)})
     res.send(result)
