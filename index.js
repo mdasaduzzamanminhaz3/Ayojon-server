@@ -82,7 +82,7 @@ app.post('/event',verifyToken,async (req, res) => {
   }
 });
 
-app.get("/my-events/:email", async (req, res) => {
+app.get("/my-events/:email",verifyToken ,async (req, res) => {
     const { email } = req.params;
 
     const result = await eventsCollection
