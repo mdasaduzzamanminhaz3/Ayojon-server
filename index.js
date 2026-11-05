@@ -117,13 +117,13 @@ app.get('/event/:id',verifyToken, async (req,res)=> {
 
 })
 
-app.delete('/event/:id', async (req,res)=> {
+app.delete('/event/:id', verifyToken,async (req,res)=> {
     const {id} = req.params;
     const result = await eventsCollection.deleteOne({ _id: new ObjectId(id) });
     res.send(result);
 });
 
-app.patch('/event/:id', async (req,res)=> {
+app.patch('/event/:id', verifyToken,async (req,res)=> {
     const {id} = req.params;
     const data = req.body;
     const result = await eventsCollection.updateOne({ _id: new ObjectId(id) }, { $set: data });
@@ -138,24 +138,24 @@ app.get('/categories',async(req,res)=> {
     const result =await eventsCategoryCollection.find({}).toArray();
     res.send(result);
 })
-app.get('/category/:id', async (req,res)=> {
+app.get('/category/:id', verifyToken,async (req,res)=> {
     const {id} = req.params;
     const result = await eventsCategoryCollection.findOne({ _id: new ObjectId(id) });
     res.send(result);
 })
-app.post('/category', async (req,res)=> {
+app.post('/category',verifyToken ,async (req,res)=> {
     const data = req.body;
     const result = await eventsCategoryCollection.insertOne(data);
     res.send(result);
 })
 
-app.delete('/category/:id', async (req,res)=> {
+app.delete('/category/:id', verifyToken,async (req,res)=> {
     const {id} = req.params;
     const result = await eventsCategoryCollection.deleteOne({ _id: new ObjectId(id) });
     res.send(result);
 });
 
-app.patch('/category/:id', async (req,res)=> {
+app.patch('/category/:id', verifyToken,async (req,res)=> {
     const {id} = req.params;
     const data = req.body;
     const result = await eventsCategoryCollection.updateOne({ _id: new ObjectId(id) }, { $set: data });
