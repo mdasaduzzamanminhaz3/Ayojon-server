@@ -110,12 +110,43 @@ app.get('/events/past', async (req,res)=> {
 
     res.send(result);
 })
-app.get('/event/:id',verifyToken, async (req,res)=> {
-    const {id} = req.params;
-    const result = await eventsCollection.findOne({ _id: new ObjectId(id) });
-    res.send(result);
 
-})
+app.get('/event/:id', verifyToken, async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // Check whether the ID is valid
+    if (!ObjectId.isValid(id)) {
+      return res.status(404).send({
+        success: false,
+        message: "Event not found",
+      });
+    }
+
+    const result = await eventsCollection.findOne({
+      _id: new ObjectId(id),
+    });
+
+    // Check whether the event exists
+    if (!result) {
+      return res.status(404).send({
+        success: false,
+        message: "Event not found",
+      });
+    }
+
+    res.status(200).send(result);
+
+  } catch (error) {
+    console.error("Get event error:", error);
+
+    res.status(500).send({
+      success: false,
+      message: "Internal server error",
+    });
+  }
+});
+
 
 app.delete('/event/:id', verifyToken,async (req,res)=> {
     const {id} = req.params;
